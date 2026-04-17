@@ -46,6 +46,9 @@ tokens.json
 # Cache
 cache/
 
+# Persistent local data (battery history, etc.)
+stored_data/
+
 # Logs
 *.log
 .claude/
