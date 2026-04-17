@@ -30,7 +30,7 @@ def zones_command():
                 "zone": zone_name,
                 "serial": serial,
                 "type": device_type,
-                "fires_boiler": "IS_ZONE_LEADER" in duties,
+                "fires_boiler": "ZONE_DRIVER" in duties,
             })
 
     if not rows:
