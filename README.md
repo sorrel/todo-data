@@ -20,7 +20,7 @@ uv run python tado.py status      # Home info and device counts
 
 ## Battery History
 
-Each time `battery` runs, it records when each device entered its current state (NORMAL or LOW). This is persisted locally in `stored_data/battery_history.json`. The **Since** column in the report shows how long a device has been in its current state — useful for spotting batteries that have been low for a while. If a device is seen for the first time, today's date is used as the baseline.
+Each time `battery` runs, it records when each device entered its current state (NORMAL or LOW). This is persisted locally in `stored_data/battery_history.json`. The **Good since** and **Low since** columns show how long a device has been in its current state — useful for spotting batteries that have been low for a while. If a device is seen for the first time, today's date is used as the baseline.
 
 ## Authentication
 

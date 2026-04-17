@@ -10,12 +10,7 @@ from core.storage import update_battery_history
 
 
 def _get_device_zone_map(client: TadoClient) -> dict:
-    """
-    Build a mapping of device serial number to zone name and controller status.
-
-    Returns dict of {serial_no: {"zone": zone_name, "is_controller": bool}}.
-    A device with ZONE_LEADER duty is the zone controller that fires the boiler.
-    """
+    """Build a mapping of device serial number to zone name."""
     zones = client.get_zones()
     if not zones:
         return {}
@@ -26,11 +21,7 @@ def _get_device_zone_map(client: TadoClient) -> dict:
         for device in zone.get("devices", []):
             serial = device.get("serialNo")
             if serial:
-                duties = device.get("duties", [])
-                device_zones[serial] = {
-                    "zone": zone_name,
-                    "is_controller": "ZONE_LEADER" in duties,
-                }
+                device_zones[serial] = zone_name
     return device_zones
 
 
@@ -58,8 +49,7 @@ def battery_command(room):
             continue
 
         serial = device.get("serialNo", "")
-        zone_info = device_zones.get(serial, {"zone": "Unassigned", "is_controller": False})
-        zone_name = zone_info["zone"]
+        zone_name = device_zones.get(serial, "Unassigned")
 
         # Apply room filter
         if room and room.lower() not in zone_name.lower():
@@ -73,7 +63,6 @@ def battery_command(room):
             "battery": battery_state,
             "connection": device.get("connectionState", {}).get("value", False),
             "firmware": device.get("currentFwVersion", ""),
-            "is_controller": zone_info["is_controller"],
         })
 
     if not battery_devices:
@@ -106,7 +95,6 @@ def battery_command(room):
         f"{'Battery':>8}  "
         f"{'Good since':<10}  "
         f"{'Low since':<10}  "
-        f"{'Boiler':>6}  "
         f"{'Connected':>9}"
     )
     click.echo()
@@ -137,12 +125,6 @@ def battery_command(room):
         else:
             low_str = f"{'':<10}"
 
-        # Zone controller (fires boiler)
-        if d["is_controller"]:
-            boiler_str = click.style(f"{'Yes':>6}", fg="green")
-        else:
-            boiler_str = click.style(f"{'No':>6}", fg="bright_black")
-
         # Colour connection status
         connected = d["connection"]
         if connected:
@@ -157,7 +139,6 @@ def battery_command(room):
             f"{battery_str}  "
             f"{good_str}  "
             f"{low_str}  "
-            f"{boiler_str}  "
             f"{conn_str}"
         )
 
