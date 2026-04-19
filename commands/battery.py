@@ -3,7 +3,6 @@ Battery reporting command.
 """
 
 import click
-from datetime import date
 
 from core.client import TadoClient
 from core.storage import update_battery_history
@@ -72,7 +71,6 @@ def battery_command(room):
     # Update persistent history and get date fields
     current_states = {d["serial"]: d["battery"] for d in battery_devices}
     history = update_battery_history(current_states)
-    today = date.today().isoformat()
 
     for d in battery_devices:
         entry = history.get(d["serial"], {})
@@ -111,12 +109,8 @@ def battery_command(room):
         else:
             battery_str = click.style(f"{'Normal':>8}", fg="green")
 
-        # Good since — dim if first seen today
         good_since = d["good_since"] or ""
-        if good_since == today:
-            good_str = click.style(f"{good_since:<10}", fg="bright_black")
-        else:
-            good_str = f"{good_since:<10}"
+        good_str = f"{good_since:<10}"
 
         # Low since — red if set, blank otherwise
         low_since = d["low_since"] or ""
