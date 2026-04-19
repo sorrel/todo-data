@@ -64,8 +64,8 @@ def update_battery_history(current_states: dict[str, str]) -> dict:
         prev_low = entry.get("low_since")
 
         if state == "NORMAL":
-            # Went from LOW → NORMAL (or first time seen as NORMAL)
-            new_good = prev_good if prev_good else today
+            # Reset good_since on LOW → NORMAL (battery replaced); preserve if already good
+            new_good = today if prev_low else (prev_good if prev_good else today)
             new_low = None
         else:
             # Went from NORMAL → LOW (or first time seen as LOW)
